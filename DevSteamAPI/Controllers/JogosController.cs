@@ -13,7 +13,6 @@ namespace DevSteamAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class JogosController : ControllerBase
     {
         private readonly DevSteamAPIContext _context;
@@ -25,7 +24,7 @@ namespace DevSteamAPI.Controllers
 
         // GET: api/Jogos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Jogo>>> GetJogos()
+        public async Task<ActionResult<IEnumerable<Jogo>>> GetJogo()
         {
             return await _context.Jogos.ToListAsync();
         }
@@ -42,6 +41,22 @@ namespace DevSteamAPI.Controllers
             }
 
             return jogo;
+        }
+
+        // GET: api/Jogos/Nome/{nome}
+        [HttpGet("Nome/{nome}")]
+        public async Task<ActionResult<IEnumerable<Jogo>>> GetJogosByNome(string nome)
+        {
+            var jogos = await _context.Jogos
+                .Where(j => j.JogoNome.Contains(nome, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            if (jogos == null || !jogos.Any())
+            {
+                return NotFound();
+            }
+
+            return jogos;
         }
 
         // PUT: api/Jogos/5
